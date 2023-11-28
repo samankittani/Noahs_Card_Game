@@ -1,0 +1,14 @@
+let resources, resourcesValue, galacticGlory;
+
+function createUI() {
+  resources = new BoxMorph();
+	resourcesValue = new TextMorph("Resources: 0", 20, "calibri");
+  resources.setWidth(resourcesValue.bounds.width());
+  resources.add(resourcesValue);
+  resources.setPosition( new Point(worldCanvas.width/2 - resources.bounds.width()/2, 0));
+	world.add(resources);
+};
+
+resorces.reactToWorldResize = (newBounds) => {
+    resorces.setPosition(new Point(newBounds.center().x, newBounds.center().y));
+};

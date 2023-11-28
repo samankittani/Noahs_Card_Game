@@ -2,44 +2,19 @@
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="style.css">
-  <title>Cosmic Conquest</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="style.css">
+	<title>Cosmic Conquest</title>
+	<script type="text/javascript" src="morphic.js-master/morphic.js"></script>
+	<script type="text/javascript" src="world.js"></script>
+	<script type="text/javascript" src="shop.js"></script>
+	<script type="text/javascript" src="ui.js"></script>
 </head>
 
 <body>
-  <img class="backgroundImg" src="images/Background.png">
-  <div class="energy">Energy: <span id="energy">0</span></div>
-  <div class="game-container">
-    <!-- Add more game elements as needed -->
-  </div>
-  <div class="drop-zone" id="dropZone"></div> <!-- The shop will also be in this area-->
-  <div class="hand-container" id="handContainer">
-    <div class="hand">
-      <div class="card" draggable="true">
-        <img src="images/MoonCard.png">
-        <p>moon</p>
-      </div>
-      <div class="card" draggable="true">
-        <img src="images/BlackHoleCard.png">
-        <p>blackhole</p>
-      </div>
-      <div class="card" draggable="true">
-        <img src="images/SunCard.png">
-        <p>sun</p>
-      </div>
-      <div class="card" draggable="true">
-        <img src="images/EarthCard.png">
-        <p>earth</p>
-      </div>
-      <div class="card" draggable="true">
-        <img src="images/basiccardbackground.png">
-        <p>3</p>
-      </div>
-    </div>
-  </div>
-  <script src="script.js"></script>
+	<canvas id="world" tabindex="1" width="1920" height="1080"
+		style="position: absolute; left: 0px; right: 0px; width: 100%; height: 100%"></canvas>
 </body>
 
 </html>
