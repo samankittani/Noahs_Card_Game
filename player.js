@@ -1,6 +1,6 @@
 let playerArea = new BoxMorph();
 
-let test
+
 function createPlayer() {
   playerArea.color = new Color(130, 130, 255);
   playerArea.setWidth(world.width() + 20);
