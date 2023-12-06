@@ -1,0 +1,20 @@
+
+\documentclass{article}
+\title{Project Proposal}
+\author{Saman Kittani and Sparsh Amarnani}
+\date{November 3th, 2023}
+\usepackage{setspace}
+\doublespacing{}
+\usepackage{graphicx}
+\usepackage{mathrsfs}
+\usepackage{geometry}
+\usepackage{enumitem}
+\usepackage{tikz}
+\usepackage{amsmath}
+\geometry{letterpaper, portrait, margin=1.3in}
+\begin{document}
+	\maketitle
+	\newpage
+	A significant number of real world problems have state spaces that are too large to plan offline. Our project will utilize a Markov Chain Descision Tree with an e-greedy component to simulate the best action in a custom card game hosted on a webpage. The game uses a standard deck of cards. Players can purchase cards from a shop using their current cards, or use a card's special ability. Each player begins with a certain number of cards. The goal is to have the most points at the end, which is dictated by the cards in your deck. Their actions will be limited by the cards that they have in their hand. A simulator will be used to complete rollouts. The rollouts will simulate random actions until an end state is reached. Rewards will be set to win = 1, tie = 0, lose = -1. To find a optimal epsilon value, we will vary epsilon in different agents and force them to compete. The agent that wins more will create a number of agents with mutated epsilon values, until the offspring cannot beat their predecessor.
+
+\end{document}

@@ -6,7 +6,9 @@ window.onload = function () {
 	world = new WorldMorph(worldCanvas);
 	world.isDevMode = true;
 	createShop();
-	createUI();
+  createOpponent();
+  createPlayer();
+  createUI();
 	loop();
 };
 
