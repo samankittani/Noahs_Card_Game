@@ -1,5 +1,5 @@
 let playerArea = new BoxMorph();
-
+let youMom = "ugly";
 
 function createPlayer() {
   playerArea.color = new Color(130, 130, 255);

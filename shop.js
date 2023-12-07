@@ -1,4 +1,5 @@
 let shopArea = new BoxMorph();
+let noah;
 
 function createShop() {
 	shopArea.color = new Color(130, 130, 130);
