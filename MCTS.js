@@ -60,7 +60,7 @@ class actionClass{
 }
 
 class MCTNodeClass{
-  constructor(state, actions,parent=None,parent_action=None,terminal,reward=0){
+  constructor(state, actions,parent=null,parent_action=null,terminal,reward=0){
     this.state = state;
 
     this.parent=parent;
@@ -72,8 +72,15 @@ class MCTNodeClass{
       get: (target, name) => name in target ? target[name] : 0
     })
     this.actions = actions;
-
-    this.untried_actions=this.get_possible_actions();
+    this.untried_actions=[];
+    if (this.state.human)
+    {
+    this.untried_actions=this.get_possible_actions(this.state.oppHand);
+    }
+    else
+    {
+      this.untried_actions=this.get_possible_actions(this.state.myHand);
+    }
 
     this.i;    
   }
@@ -91,7 +98,7 @@ function argMax(array) {
   return array.map((x, i) => [x, i]).reduce((r, a) => (a[0] > r[0] ? a : r))[1];
 }
 
-MCTS.prototype.initDeck = () => {
+MCTSClass.prototype.initDeck = () => {
   const oppD = new Array();
   const myD = new Array();
   const myHand = new Array();
@@ -120,7 +127,7 @@ MCTS.prototype.initDeck = () => {
 }
 
 
-MCTS.prototype.initShop = () => {
+MCTSClass.prototype.initShop = () => {
   const shopD = new Array();
   const shop = new Array();
 
@@ -146,13 +153,13 @@ MCTS.prototype.initShop = () => {
 }
 
 
-MCTS.prototype.initActions = () => {
+MCTSClass.prototype.initActions = () => {
   
   const actions = new actionClass()
   return actions
 }
 
-MCTS.prototype.init = () => {
+MCTSClass.prototype.init = () => {
   // create initial state variables
   const [oppD, myD, myHand, oppHand] = this.initDeck();
   const [shopD, initShop] = this.initShop();
@@ -163,24 +170,25 @@ MCTS.prototype.init = () => {
   // use initial state to create possible actions
 
   // create root node
-  this.root = new MCTNode(initState)
+  this.root = new MCTNodeClass(initState)
 }
 
-MCTS.prototype.get_possible_actions = () => {//this returns buymax but needs to return cards, choosen and played
+MCTNodeClass.get_possible_actions = (hand) =>
+{//this returns buymax but needs to return cards, choosen and played
 
   buy_list =[];
   play_list=[];
   buy_max=null
-  for (cards in state.shopD)//assumes that shopD are the cards available at the turn
+  for (cards in this.state.shopD)//assumes that shopD are the cards available at the turn
   { 
-    if (cards.cost<=sum(state.hand))
+    if (cards.cost<=sum(hand))
     {
       buy_list.push(cards);
     }
     
   }
 
-  for (cards in state.hand)
+  for (cards in hand)
   { 
     if (cards.face!=null)
     {
@@ -208,25 +216,113 @@ MCTS.prototype.get_possible_actions = () => {//this returns buymax but needs to 
 
 }
 
-MCTS.prototype.AIStep = (state,action) =>
+MCTNodeClass.spade = (state) =>
+{
+  if (state.human)
+  {
+
+    steal=state.myHand.pop();
+    state.oppD.push(steal);
+    return state;
+  }
+  else
+  {
+    steal=state.oppHand.pop();
+    state.myD.push(steal);
+    return state;
+  }
+}
+
+MCTNodeClass.club =(state)=>
+{
+  if (state.human)
+  {
+  state.myHand=[];
+  return state;
+  }
+  else
+  {
+    state.oppHand=[];
+    return state;
+  }
+}
+
+MCTNodeClass.AIStep = (state,action) =>
 {
   
   next_state=state
-  for (a in action)
+  if (action[0] !=null)
+    {
+      next_state.myD.push(action[0]);
+      next_state.human=!next_state.human;
+    }
+  else 
   {
-    if (a !=null)
-    {next_state.myD.push(a)}
-    
+    if (state.action[1].suit =='spade')
+    {
+      next_state=this.spade(state);
+      next_state.myD.push(action[0]);
+      next_state.human=!next_state.human;
+    }
+    else if (state.action[1].suit =='club')
+    {
+      next_state=this.club(state);
+      hand_ind=next_state.myHand.indexOf(action[1]);
+      next_state.shopD=next_state.myHand.splice(hand_ind,1);
+    }
   }
-  next_state.myD=next_state.myD.concat(next_state.myHand)
+  next_state.myD=next_state.myD.concat(next_state.myHand);
 
-  next_state.myHand=random(3,myD)//how to pick 3 random elements from a list
+  next_state.myHand=random(3,myD);//how to pick 3 random elements from a list
 
   if (action[0]!=null)
   {
 
-    shop_ind=next_state.shopD.indexOf(action[0])
-    next_state.shopD=next_state.shopD.splice(shop_ind,1)
+    shop_ind=next_state.shopD.indexOf(action[0]);
+    next_state.shopD=next_state.shopD.splice(shop_ind,1);
+    //next_state.shopD.remove(action[0])//need to find the remove element function for this 
+    //next_state.shopD.remove(action[1])
+  }
+
+    
+  
+  next_state.shopD.push(shop.pop());
+  return next_state;
+}
+
+MCTNodeClass.humanStep = (state,action) =>
+{
+  
+  next_state=state;
+
+  if (action[0] !=null)
+    {next_state.oppD.push(action[0]);}
+  else 
+  {
+    if (state.action[1].suit =='spade')
+    {
+      next_state=this.spade(state);
+      next_state.oppD.push(action[0]);
+      next_state.human=!next_state.human;
+    }
+    else if (state.action[1].suit =='club')
+    {
+      next_state=this.club(state);
+      hand_ind=next_state.oppHand.indexOf(action[1]);
+      next_state.shopD=next_state.oppHandand.splice(hand_ind,1);
+    }
+  }
+  
+  next_state.oppD=next_state.oppD.concat(next_state.oppHand);
+
+  next_state.oppHand=random(3,oppD);//how to pick 3 random elements from a list
+
+
+  if (action[0]!=null)
+  {
+
+    shop_ind=next_state.shopD.indexOf(action[0]);
+    next_state.shopD=next_state.shopD.splice(shop_ind,1);
     //next_state.shopD.remove(action[0])//need to find the remove element function for this 
     //next_state.shopD.remove(action[1])
   }
@@ -237,37 +333,7 @@ MCTS.prototype.AIStep = (state,action) =>
   return next_state
 }
 
-MCTS.prototype.humanStep = (state,action) =>
-{
-  
-  next_state=state
-  for (a in action)
-  {
-    if (a !=null)
-    {next_state.oppD.push(a)}
-    
-  }
-  next_state.oppD=next_state.oppD.concat(next_state.oppHand)
-
-  next_state.oppHand=random(3,oppD)//how to pick 3 random elements from a list
-
-
-  if (action[0]!=null)
-  {
-
-    shop_ind=next_state.shopD.indexOf(action[0])
-    next_state.shopD=next_state.shopD.splice(shop_ind,1)
-    //next_state.shopD.remove(action[0])//need to find the remove element function for this 
-    //next_state.shopD.remove(action[1])
-  }
-
-    
-  
-  next_state.shopD.push(shop.pop())
-  return next_state
-}
-
-MCTS.prototype.step = (state,action) =>
+MCTNodeClass.step = (state,action) =>
 {
   var next_state;
   var terminal=0;
@@ -281,6 +347,7 @@ MCTS.prototype.step = (state,action) =>
   {
     next_state=this.AIStep(state,action);
   }
+
 
   if (next_state.shopD.length==0 && next_state.shop.length==0)
   {
@@ -306,7 +373,7 @@ MCTS.prototype.step = (state,action) =>
       reward=-1
     }
 
-    [next_state,reward,terminal]
+    return [next_state,reward,terminal];
 
   }
 
@@ -314,7 +381,7 @@ MCTS.prototype.step = (state,action) =>
 
 
 
-MCTS.prototype.expand = () => {
+MCTNodeClass.expand = () => {
 
   action = this.untried_actions.pop();//ith action taken would be relate to ith child of the parent node
   next_state_result = this.step(this.state,action);
@@ -326,3 +393,21 @@ MCTS.prototype.expand = () => {
   return child_node ;
 
 }
+
+MCTNodeClass.backpropogate = (result) =>
+{
+  this.number_of_visits += 1;
+  this.results[result] += 1;
+  if (this.parent)
+    {this.parent.backpropagate(result);}
+}
+
+MCTNodeClass.is_fully_expanded =()=>
+{
+    return this.untried_actions.length == 0;
+}
+
+
+
+
+mcts_test=new MCTNodeClass()
