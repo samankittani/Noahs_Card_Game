@@ -8,7 +8,7 @@ cardMorph.uber = BoxMorph.prototype;
 
 cardMorph.prototype.init = function(value, suit, cost) {
   cardMorph.uber.init.call(this);
-  console.log(this);
+  // console.log(this);
 
   this.value = value;
   this.suit = suit;

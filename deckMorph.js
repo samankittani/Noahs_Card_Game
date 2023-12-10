@@ -8,7 +8,7 @@ deckAreaMorph.uber = BoxMorph.prototype;
 
 deckAreaMorph.prototype.init = function(option) {
   deckAreaMorph.uber.init.call(this);
-  console.log(this);
+  // console.log(this);
 
   this.count = 0;
 
@@ -29,14 +29,14 @@ deckAreaMorph.prototype.fixLayout = function() {
   deckAreaMorph.uber.fixLayout.call(this);
   for(let i = 0; i < this.children.length; i++ ){
     this.children[i].setCenter(new Point(this.center().x + (i * 2.7), this.center().y - (i * 1.8)))
-    console.log(this.center);
+    // console.log(this.center);
     
   }
 };
 
 
 deckAreaMorph.prototype.initDeck = function(option) {
-  console.log(this);
+  // console.log(this);
   if(option === 'shopD'){
     for(let i = 6; i < 11; i += 1){
       this.addChild(new cardMorph(i, SUITS.club, i))

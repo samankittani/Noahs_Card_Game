@@ -2,7 +2,7 @@ const shopArea = new BoxMorph();
 
 function createShop() {
 	shopArea.color = new Color(130, 130, 130);
-	console.log(world.center());
+	// console.log(world.center());
 	shopArea.addChild(shopArea.deck = new deckAreaMorph('shopD'));
 	shopArea.addChild(shopArea.fDeck = new deckAreaMorph('shopFD'));
 	shopArea.fixLayout();
