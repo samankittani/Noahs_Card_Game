@@ -16,6 +16,12 @@ class handClass{
   }
 }
 
+const Faces = {
+  jack: 'jack',
+  king: 'king',
+  queen: 'queen',
+  }
+
 const SUITS = {
   spade: 'spade',
   club: 'club',
@@ -24,11 +30,12 @@ const SUITS = {
   }
 
 class cardClass{
-  constructor(number, suit, cost, wPoints){
+  constructor(number, suit, cost, wPoints,face){
     this.number = number;
     this.suit = suit;
     this.cost = cost;
     this.wPoints = wPoints;
+    this.face=face
 
   }
 }
@@ -53,9 +60,21 @@ class actionClass{
 }
 
 class MCTNodeClass{
-  constructor(state, actions){
+  constructor(state, actions,parent=None,parent_action=None,terminal,reward=0){
     this.state = state;
+
+    this.parent=parent;
+    this.parent_action=parent_action;
+    this.terminal=terminal;
+    this.children = [];
+    this.number_of_visits = 0;
+    this.result = new Proxy({}, {
+      get: (target, name) => name in target ? target[name] : 0
+    })
     this.actions = actions;
+
+    this.untried_actions=this.get_possible_actions();
+
     this.i;    
   }
 }
@@ -66,6 +85,10 @@ class MCTSClass{
     
   }
 
+}
+
+function argMax(array) {
+  return array.map((x, i) => [x, i]).reduce((r, a) => (a[0] > r[0] ? a : r))[1];
 }
 
 MCTS.prototype.initDeck = () => {
@@ -143,3 +166,163 @@ MCTS.prototype.init = () => {
   this.root = new MCTNode(initState)
 }
 
+MCTS.prototype.get_possible_actions = () => {//this returns buymax but needs to return cards, choosen and played
+
+  buy_list =[];
+  play_list=[];
+  buy_max=null
+  for (cards in state.shopD)//assumes that shopD are the cards available at the turn
+  { 
+    if (cards.cost<=sum(state.hand))
+    {
+      buy_list.push(cards);
+    }
+    
+  }
+
+  for (cards in state.hand)
+  { 
+    if (cards.face!=null)
+    {
+      play_list.push(cards);
+    }
+    
+  }
+
+  buy_max=buy_list[argMax(buy_list)];
+  
+
+  possible_actions = new Array();
+  if (buy_list.length!=0)
+  {
+    possible_actions.push( [buy_max,null]);
+  }//read up on appending and extending arrays in js
+
+
+  for (h in play_list)
+  {
+    possible_actions.push([null,h]);
+  }
+
+  return possible_actions;
+
+}
+
+MCTS.prototype.AIStep = (state,action) =>
+{
+  
+  next_state=state
+  for (a in action)
+  {
+    if (a !=null)
+    {next_state.myD.push(a)}
+    
+  }
+  next_state.myD=next_state.myD.concat(next_state.myHand)
+
+  next_state.myHand=random(3,myD)//how to pick 3 random elements from a list
+
+  if (action[0]!=null)
+  {
+
+    shop_ind=next_state.shopD.indexOf(action[0])
+    next_state.shopD=next_state.shopD.splice(shop_ind,1)
+    //next_state.shopD.remove(action[0])//need to find the remove element function for this 
+    //next_state.shopD.remove(action[1])
+  }
+
+    
+  
+  next_state.shopD.push(shop.pop())
+  return next_state
+}
+
+MCTS.prototype.humanStep = (state,action) =>
+{
+  
+  next_state=state
+  for (a in action)
+  {
+    if (a !=null)
+    {next_state.oppD.push(a)}
+    
+  }
+  next_state.oppD=next_state.oppD.concat(next_state.oppHand)
+
+  next_state.oppHand=random(3,oppD)//how to pick 3 random elements from a list
+
+
+  if (action[0]!=null)
+  {
+
+    shop_ind=next_state.shopD.indexOf(action[0])
+    next_state.shopD=next_state.shopD.splice(shop_ind,1)
+    //next_state.shopD.remove(action[0])//need to find the remove element function for this 
+    //next_state.shopD.remove(action[1])
+  }
+
+    
+  
+  next_state.shopD.push(shop.pop())
+  return next_state
+}
+
+MCTS.prototype.step = (state,action) =>
+{
+  var next_state;
+  var terminal=0;
+  var reward=0;
+  if (state.human)
+  {
+    
+    next_state=this.humanStep(state,action);
+  }
+  else
+  {
+    next_state=this.AIStep(state,action);
+  }
+
+  if (next_state.shopD.length==0 && next_state.shop.length==0)
+  {
+    terminal=1;
+    myVal=0
+    oppVal=0
+
+    for (card in myD)
+    {
+      myVal+=card.wPoints
+    }
+    for (card in oppD)
+    {
+      oppVal+=card.wPoints
+    }
+
+    if (myVal>oppVal)
+    {
+      reward=1
+    }
+    else if (oppVal>myVal)
+    {
+      reward=-1
+    }
+
+    [next_state,reward,terminal]
+
+  }
+
+}
+
+
+
+MCTS.prototype.expand = () => {
+
+  action = this.untried_actions.pop();//ith action taken would be relate to ith child of the parent node
+  next_state_result = this.step(this.state,action);
+  next_state=next_state_result[0];
+  reward=next_state_result[1];
+  terminal=next_state_result[2];
+  child_node = MCTS(next_state, parent=this, parent_action=action,terminal=terminal,reward=reward);//how do you call the constructor
+  this.children.push(child_node);
+  return child_node ;
+
+}
