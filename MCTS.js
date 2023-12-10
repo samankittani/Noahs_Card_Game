@@ -394,6 +394,27 @@ MCTNodeClass.expand = () => {
 
 }
 
+MCTNodeClass.rollout = () =>
+{
+terminal_state=this.terminal;
+current_reward=0;
+reward=0;
+current_state=this.state;
+human=this.state;
+while (terminal_state!=1)
+{
+    possible_actions = this.get_possible_actions(human)
+    action=choose_random(1,possible_actions)
+    result=this.step(action,current_state)
+    current_reward=result[1]
+    current_state=result[0]
+    terminal_state=result[2]
+}
+self.env.reset()
+for a in self.get_action_history():
+    self.env.step(a)
+return current_reward
+
 MCTNodeClass.backpropogate = (result) =>
 {
   this.number_of_visits += 1;
