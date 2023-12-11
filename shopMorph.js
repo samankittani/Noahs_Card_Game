@@ -3,8 +3,8 @@ const shopArea = new BoxMorph();
 function createShop() {
 	shopArea.color = new Color(130, 130, 130);
 	// console.log(world.center());
-	shopArea.addChild(shopArea.deck = new deckAreaMorph('shopD'));
-	shopArea.addChild(shopArea.fDeck = new deckAreaMorph('shopFD'));
+	shopArea.addChild(shopArea.deck = new deckAreaMorph(DECKTYPES.sD));
+	shopArea.addChild(shopArea.fDeck = new deckAreaMorph(DECKTYPES.sFD));
 	shopArea.fixLayout();
 	world.add(shopArea);
 };

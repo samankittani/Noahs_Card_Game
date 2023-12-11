@@ -38,10 +38,10 @@ cardMorph.prototype.setImage = function() {
     this.display.addChild(this.display.text = new StringMorph(`${this.value}`, 70, 'times', true))
     this.display.text.setPosition(this.display.topLeft())
   }
-  else if(this.suit === SUITS.spade){
+  else if(this.suit === SUITS.club){
     this.display.texture = 'http://localhost:8000/images/newMoon.svg';
   }
-  else if(this.suit === SUITS.club){
+  else if(this.suit === SUITS.spade){
     this.display.texture = 'http://localhost:8000/images/NewBlackhole.svg';
   }
 }
