@@ -45,13 +45,23 @@ deckAreaMorph.prototype.initDeck = function(option) {
 
   }else if(option === 'shopFD'){
     for(let i = 0; i < 2; i++){
-      this.addChild(new cardMorph(0, SUITS.club, i))
-      this.addChild(new cardMorph(0, SUITS.spade, i))
+      this.addChild(new cardMorph(0, SUITS.club, 15))
+      this.addChild(new cardMorph(0, SUITS.spade, 15))
     }
 
   }else if(option === SUITS.spade){
+    for(let i = 1; i < 6; i += 1){
+      this.addChild(new cardMorph(i, SUITS.spade, i))
+    }
+    this.addChild(new cardMorph(0, SUITS.spade, 15))
 
   }else if(option === SUITS.club){
-
+    for(let i = 1; i < 6; i += 1){
+      this.addChild(new cardMorph(i, SUITS.club, i))
+    }
+    this.addChild(new cardMorph(0, SUITS.club, 15))
+        
+  }else if(option === 'empty'){
+    /* do nothing */
   }
 }

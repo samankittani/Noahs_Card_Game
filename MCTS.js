@@ -753,4 +753,4 @@ class MCTSClass {
     return [shopD, shopFD, shop];
   };
 }
-const MCTS = new MCTSClass(5000, [1, .01], .2, ROLLOUTTYPES.sBiasRand);
+const MCTS = new MCTSClass(10000, [1, .01], .2, ROLLOUTTYPES.sBiasRand);
