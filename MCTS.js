@@ -505,6 +505,8 @@ class MCTSClass {
     this.exploreParam = exploreParam;
     this.root;
     this.rolloutType = rolloutType;
+    this.depth = 0;
+    this.maxPaths = 0;
     this.init();
   }
   /*
@@ -539,54 +541,63 @@ class MCTSClass {
   /* 
   Run MCTS for the specified iterations*/
   run = function () {
-    for(let i = 0; i < this.maxIter; i++){
-        this.step();
+    for (let i = 0; i < this.maxIter; i++) {
+      this.step();
     }
-    console.log('done');
-  }
+    console.log("done");
+  };
   /* 
   get best action  */
   best = function () {
     let bestAction = this.root.actions[0];
-    for(const action of this.root.actions){
-      if(action.nPicks > bestAction.nPicks){
+    for (const action of this.root.actions) {
+      if (action.nPicks > bestAction.nPicks) {
         bestAction = action;
       }
     }
     return bestAction;
-  }
+  };
   /* 
   update root to play next turn*/
-  updateRoot = function(newAction, newState){
-    let action = getMatchingAction(newAction);
+  updateRoot = function (newAction, newState) {
+    let action = this.getMatchingAction(newAction);
     //try to find matching state. if not available, create a new root from scratch
     newState = sortState(JSON.parse(JSON.stringify(newState)));
-    for(const path of action.paths){
-        if(_.isEqual(newState, path.state)){
-            this.root = path;
-            return this.root;
-        }
-        this.root = new MCTNodeClass(newState, this.exploreParam,this.widenParam, this.rolloutType);
+    for (const path of action.paths) {
+      if (_.isEqual(newState, path.state)) {
+        this.root = path;
+        return this.root;
+      }
+      this.root = new MCTNodeClass(
+        newState,
+        this.exploreParam,
+        this.widenParam,
+        this.rolloutType
+      );
     }
   };
   /* 
   get action that matches given action*/
   getMatchingAction = function (newAction) {
-    for(let i = 0; i < this.root.actions.length; i++){
-        if(newAction.action === this.root.actions[i].action && newAction.shopIndex === this.root.actions[i].shopIndex){
-            return this.rroot.actions[i];
-        }
+    for (let i = 0; i < this.root.actions.length; i++) {
+      if (
+        newAction.action === this.root.actions[i].action &&
+        newAction.shopIndex === this.root.actions[i].shopIndex
+      ) {
+        return this.root.actions[i];
+      }
     }
-  }
+  };
+
   /* 
   Run MCTS. 
   does one iteration*/
   step = function () {
-    console.log('getBestLeaf')
+    console.log("getBestLeaf");
     let leaf = this.getBestLeaf();
-    console.log('rollout')
+    console.log("rollout");
     let res = this.rollout(leaf);
-    console.log('backProp')
+    console.log("backProp");
     this.backProp(res, leaf);
   };
   /*
@@ -596,9 +607,17 @@ class MCTSClass {
   getBestLeaf = function () {
     let node = this.root;
 
+    this.depth = 1;
     while (node.nSamples !== 0) {
       let bestActionInd = node.getNextActionInd();
+
+      this.maxPaths =
+        node.actions[bestActionInd].paths.length > this.maxPaths
+          ? node.actions[bestActionInd].paths.length
+          : this.maxPaths;
+
       node = node.actions[bestActionInd].getNextNode();
+      this.depth++;
     }
     return node;
   };
@@ -620,18 +639,18 @@ class MCTSClass {
   When we reach the root, we update GLOBAL_ITER */
   backProp = function (res, leaf) {
     let node = leaf;
-    while (this.root !== node) { 
-        node.updateValues(res);
-        node = node.parentAction.node;
+    while (this.root !== node) {
+      node.updateValues(res);
+      node = node.parentAction.node;
     }
     this.root.nSamples++;
     for (const action of this.root.actions) {
-        if (action.nPicks !== 0) {
-          action.updateUCB1();
-        }
+      if (action.nPicks !== 0) {
+        action.updateUCB1();
       }
+    }
   };
-  
+
   /*
   implementation of the biasRand rollout
   take a state and modify it until an end state is reached. return winner
@@ -752,5 +771,27 @@ class MCTSClass {
 
     return [shopD, shopFD, shop];
   };
+  /* 
+  Print MCTS values */
+  print = function () {
+    console.log(`MCTS:\n
+    Iterations: ${this.root.nSamples}\n
+    Widening Param: ${this.widenParam}\n
+    Explore param: ${this.exploreParam}\n
+    maxDepth: ${this.depth}\n
+    maxActionBreadth: ${this.maxPaths}`);
+  };
 }
-const MCTS = new MCTSClass(10000, [1, .01], .2, ROLLOUTTYPES.sBiasRand);
+
+function testMCTS(){
+  const MCTS = new MCTSClass(50000, [1, .01], .2, ROLLOUTTYPES.sBiasRand);
+  const MCTS2 = new MCTSClass(50000, [10, .5], 1, ROLLOUTTYPES.sBiasRand);
+  const MCTS3 = new MCTSClass(50000, [6, .4], 2, ROLLOUTTYPES.sBiasRand);
+
+  MCTS.run();
+  MCTS2.run();
+  MCTS3.run();
+  MCTS.print();
+  MCTS2.print();
+  MCTS3.print();
+};

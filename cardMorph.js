@@ -92,6 +92,7 @@ cardMorph.prototype.flip = function () {
 }
 
 cardMorph.prototype.mouseClickRight = function () {
-  this.flip();  
+  this.escalateEvent('draw', this.parent.option);   
 }
+
 

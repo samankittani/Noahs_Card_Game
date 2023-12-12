@@ -17,19 +17,16 @@ deckAreaMorph.uber = BoxMorph.prototype;
 
 deckAreaMorph.prototype.init = function(option) {
   deckAreaMorph.uber.init.call(this);
-  // console.log(this);
-
-  this.count = 0;
 
   const [width, height] = [340, 370];
   
   this.bounds.setWidth(width);
   this.bounds.setHeight(height);
   
+  this.option = option;
   this.color = new Color(60, 60, 60, 1);
   
   this.initDeck(option);
-
   this.fixLayout();
 
 };
@@ -60,15 +57,15 @@ deckAreaMorph.prototype.initDeck = function(option) {
 
   }else if(option === DECKTYPES.pD){
     for(let i = 1; i < 6; i += 1){
-      this.addChild(new cardMorph(i, SUITS.club, i))
-    }
-    this.addChild(new cardMorph(0, SUITS.club, 15))
-
-  }else if(option === DECKTYPES.oD){
-    for(let i = 1; i < 6; i += 1){
       this.addChild(new cardMorph(i, SUITS.spade, i))
     }
     this.addChild(new cardMorph(0, SUITS.spade, 15))
+
+  }else if(option === DECKTYPES.oD){
+    for(let i = 1; i < 6; i += 1){
+      this.addChild(new cardMorph(i, SUITS.club, i))
+    }
+    this.addChild(new cardMorph(0, SUITS.club, 15))
         
   }else if(option === DECKTYPES.pDis){
     /* Do nothing */
@@ -76,3 +73,8 @@ deckAreaMorph.prototype.initDeck = function(option) {
     /* Do nothing */
   }
 }
+
+deckAreaMorph.prototype.mouseClickRight = function () {
+  this.escalateEvent('draw', this.option);  
+}
+

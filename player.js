@@ -9,6 +9,14 @@ function createPlayer() {
 	
 	playerArea.addChild(playerArea.dis = new deckAreaMorph(DECKTYPES.pDis))
 	playerArea.addChild(playerArea.deck = new deckAreaMorph(DECKTYPES.pD));
+	playerArea.addChild(playerArea.hand = new handMorph());
+	
+	/* Testing *****************************************************
+	playerArea.hand.addChild(new cardMorph(0, SUITS.club, 15))
+	playerArea.hand.addChild(new cardMorph(0, SUITS.club, 15))
+	playerArea.hand.addChild(new cardMorph(0, SUITS.club, 15))
+	/* end of testing **********************************************/
+	playerArea.hand.fixLayout()
 
 	playerArea.fixLayout();
 	world.add(playerArea);
@@ -30,5 +38,8 @@ playerArea.fixLayout = function (){
 	if(playerArea.deck){
 		playerArea.deck.setCenter(playerArea.center());
 		playerArea.deck.setLeft(world.right() - 385);
+	}
+	if(playerArea.hand){
+		playerArea.hand.setCenter(playerArea.center());
 	}
 }

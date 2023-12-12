@@ -7,27 +7,43 @@ function createOpponent() {
   opponentArea.setHeight(world.height()/3);
 
 
-  opponentArea.addChild(opponentArea.dis = new deckAreaMorph(DECKTYPES.oDis))
+  opponentArea.addChild(opponentArea.dis = new deckAreaMorph(DECKTYPES.oDis));
   opponentArea.addChild(opponentArea.deck = new deckAreaMorph(DECKTYPES.oD));
+	opponentArea.addChild(opponentArea.hand = new handMorph());
 	
+	/* Testing *****************************************************
+	for(let i = 0; i < 5; i++){
+		opponentArea.hand.addChild(new cardMorph(0, SUITS.spade, 15))
+	}
+	/* end of testing **********************************************/
+	opponentArea.hand.fixLayout()
+
 	opponentArea.fixLayout();
   world.add(opponentArea);
 };
 
-opponentArea.reactToWorldResize = (newBounds) => {
-  opponentArea.setWidth(world.width() + 20);
-  opponentArea.setHeight(world.height()/3);
+opponentArea.reactToWorldResize = function(newBounds) {
+  
+  this.setWidth(world.width() + 20);
+  this.setHeight(world.height()/3);
 };
 
 opponentArea.fixLayout = function () {
-
-
-	if(opponentArea.dis){
-		opponentArea.dis.setCenter(opponentArea.center());
-		opponentArea.dis.setLeft(50);
+	if(this.dis){
+		this.dis.setCenter(this.center());
+		this.dis.setLeft(50);
 	}
-	if(opponentArea.deck){
-		opponentArea.deck.setCenter(opponentArea.center());
-		opponentArea.deck.setLeft(world.right() - 385);
+	if(this.deck){
+		this.deck.setCenter(this.center());
+		this.deck.setLeft(world.right() - 385);
 	}
+	if(this.hand){
+		this.hand.setCenter(this.center());
+	}
+}
+
+opponentArea.draw = function (option) {
+	if(option === DECKTYPES.oD)
+		this.myAnimation(1000, 1000);
+	else if(option === DECKTYPES.mDis);
 }
